@@ -4,12 +4,6 @@ plugins {
     id "signing"
 }
 
-def publishingProps = new Properties()
-def publishingFile = file("${rootDir}/keystore/publishing.properties")
-if (publishingFile.exists()) {
-    publishingProps.load(publishingFile.newInputStream())
-}
-
 android {
     namespace = "com.rosan.app_process"
     compileSdk = TARGET_SDK
@@ -62,52 +56,15 @@ publishing {
                 from components.findByName('release')
             }
 
-            group = publishingProps['groupId']
-            artifactId = publishingProps['artifactId']
+            groupId = 'com.github.wxxsfxyzm'
+            artifactId = 'app-process'
             version = ARTIFACT_VERSION
 
             pom {
-                name = publishingProps['pom.name']
-                description = publishingProps['pom.description']
-                inceptionYear = publishingProps['pom.inceptionYear']
-                url = publishingProps['pom.url']
-                scm {
-                    url = publishingProps['pom.scmUrl']
-                    connection = publishingProps['pom.scmConnection']
-                }
-                licenses {
-                    license {
-                        name = publishingProps['pom.licenceName']
-                        url = publishingProps['pom.licenceUrl']
-                    }
-                }
-                developers {
-                    developer {
-                        name = publishingProps['pom.developerName']
-                        url = publishingProps['pom.developerUrl']
-                    }
-                }
+                name = 'App Process Revived'
+                description = 'My custom fork of App Process'
+                url = "https://github.com/wxxsfxyzm/AndroidAppProcess"
             }
         }
     }
-    repositories {
-        maven {
-            url = uri(rootProject.layout.buildDirectory.dir("staging").get().asFile)
-        }
-    }
-}
-
-signing {
-    if (publishingFile.exists()) {
-        def privateKey = publishingProps['signing.privateKey']
-        if (privateKey == null) {
-            privateKey = file(publishingProps['signing.secretKeyRingFile']).text
-        }
-        useInMemoryPgpKeys(
-                publishingProps['signing.keyId'],
-                privateKey,
-                publishingProps['signing.password']
-        )
-    }
-    sign publishing.publications
 }
